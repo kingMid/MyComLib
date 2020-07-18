@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .box {
+        width: 700px;
+        height: 300px;
+        margin: 100px auto;
+        position: relative;
+    }
+
+    .tal-bar {
+        overflow: hidden;
+    }
+
+    .tal-bar li {
+        list-style: none;
+    }
+
+    .tal-bar .list {
+        float: left;
+        width: 100px;
+        height: 30px;
+        border-radius: 8%;
+        background: #cc0;
+        margin-right: 20px;
+        text-align: center;
+        line-height: 30px;
+        color: #fff;
+    }
+
+    .tal-bar .active {
+        background: #052;
+    }
+
+    .box .centent-box {
+        border: 1px solid #000000;
+        height: inherit;
+    }
+
+    .box .centent {
+        display: none;
+        width: inherit;
+        height: inherit;
+    }
+
+    .box .active1 {
+        display: block;
+    }
+
+    .btns .btn-add {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        background: #cc0;
+    }
+</style>
+
+<body>
+    <div class="box" id="mytab1">
+        <div class="btns">
+            <span class="btn-add">+</span>
+        </div>
+        <ul class="tal-bar">
+            <li class="list active">html</li>
+            <li class="list">css</li>
+            <li class="list">js</li>
+        </ul>
+        <div class="centent-box">
+            <div class="centent active1">111</div>
+            <div class="centent">222</div>
+            <div class="centent">333</div>
+        </div>
+
+    </div>
+
+    <div class="box" id="mytab2">
+        <div class="btns">
+            <span class="btn-add">+</span>
+        </div>
+        <ul class="tal-bar">
+            <li class="list active">html</li>
+            <li class="list">css</li>
+            <li class="list">js</li>
+        </ul>
+        <div class="centent-box">
+            <div class="centent active1">111</div>
+            <div class="centent">222</div>
+            <div class="centent">333</div>
+        </div>
+
+    </div>
+</body>
+<script src="Mylib.js"></script>
+<script>
+    //方式一
+    //    var obj=document.getElementsByClassName("list");
+
+    // //    console.log( obj instanceof Array);
+    //    var arr =Array.from(obj);
+    // //   console.log( arr instanceof Array);
+    // var ob=document.getElementsByClassName("centent");
+    //  var arr1 =Array.from(ob);
+
+
+    //方式二
+    // var arr =document.querySelectorAll('.list');
+    // var arr1 =document.querySelectorAll('.centent');
+
+    //    for(var i=0;i<arr.length;i++){
+    //     arr[i].index =i;
+    //     arr[i].onclick =function(){
+    //         for(var i=0;i<arr.length;i++){
+    //             arr[i].className ='list';
+    //             arr1[i].className='centent';
+    //         }
+    //         this.className ='list active'
+    //         arr1[this.index].className="centent active1";
+    //     }
+    //    }
+
+
+    var RETab = (function () {
+        function RETab(options) {
+            // this.width = width;
+            // this.height =height;
+            // this.tabNum = tabNum;
+            var defauleSetting = {
+                width: 500,
+                height: 300,
+                tabNum: 3
+            }
+            this.setting = Mylib.extend(defauleSetting, options);
+        }
+        //组件初始化 根据客户传过来的值进行相应的设置和事件绑定
+        RETab.prototype.init = function () {
+            var _this = this;
+            this.Element = document.querySelector(this.setting.el);
+            this.Element.style.width = this.setting.width + "px";
+            this. Element.style.height = this.setting.height + "px";
+            this.talBar = this.Element.querySelectorAll('.list');
+            this.centent = this.Element.querySelectorAll('.centent');
+            this.talBox = this.Element.querySelector('.tal-bar');
+            this.addE = this.Element.querySelector('.btn-add');
+            this.addD = this.Element.querySelector('.centent-box');
+          
+
+            for (var i = 0; i < this.talBar.length; i++) {
+                this.talBar[i].index = i;
+            //     this.talBar[i].addEventListener('click', function () {
+            //         _this.switchTab(this.index);
+
+            //     }, false)
+             }
+             this.talBox.addEventListener('click', function(e){
+                    if(e.target.tagName == 'LI'){
+                        _this.switchTab(e.target.index);
+                    }
+                }, false);
+
+           
+            this.addE.addEventListener('click', function () {
+                _this.addTab();
+
+            }, false)
+
+        };
+        RETab.prototype.switchTab = function (index) {
+             for (var i = 0; i < this.talBar.length; i++) {
+                    this.talBar[i].className='list';
+                    this.centent[i].className='centent';
+            }
+            this.talBar[index].className = "list active";
+            this.centent[index].className = "centent active1";
+        }
+        RETab.prototype.addTab = function () {
+            var Newlist = document.createElement('li');
+            Newlist.innerHTML = 'NewList';
+            Newlist.className = 'list ';
+            Newlist.index = this.talBar.length;
+            this.talBox.appendChild(Newlist);
+
+            var NewDiv = document.createElement('div');
+            NewDiv.innerHTML = 'New div';
+            NewDiv.className ="centent "
+            this.addD.appendChild(NewDiv);
+            this._upDate();
+            this.switchTab( Newlist.index);
+        }
+        RETab.prototype._upDate = function(){
+            this.talBar = this.Element.querySelectorAll('.list');
+            this.centent =  this.Element.querySelectorAll('.centent');
+        }
+        return RETab;
+    })();
+
+
+    var tab1 = new RETab({
+        width: 500,
+        height: 200,
+        tabNum: 3,
+        el: '#mytab1'
+    }).init();
+    var tab2 = new RETab({
+        width: 800,
+        height: 600,
+        tabNum: 3,
+        el: '#mytab2'
+    }).init();
+
+
+</script>
+
+</html>
